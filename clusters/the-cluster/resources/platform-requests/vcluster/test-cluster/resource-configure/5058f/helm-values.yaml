@@ -9,7 +9,7 @@ data:
       distro:
         k8s:
           enabled: true
-          version: "1.34"
+          version: "v1.34.3"
       statefulSet:
         resources:
           requests:
