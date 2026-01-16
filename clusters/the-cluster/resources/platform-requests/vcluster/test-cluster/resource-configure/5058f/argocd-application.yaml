@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vcluster-test
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.30.4
+    helm:
+      valuesObject:
+        controlPlane:
+          distro:
+            k8s:
+              enabled: true
+              version: "v1.34.3"
+          statefulSet:
+            resources:
+              requests:
+                cpu: "200m"
+                memory: "512Mi"
+              limits:
+                cpu: "1000m"
+                memory: "1Gi"
+        
+        sync:
+          toHost:
+            pods:
+              enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-test
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
