@@ -13,7 +13,7 @@ data:
       statefulSet:
         persistence:
           enabled: true
-          size: "5Gi"
+          size: "1Gi"
 
         resources:
           requests:
