@@ -11,6 +11,10 @@ data:
           enabled: true
           version: "v1.34.3"
       statefulSet:
+        persistence:
+          enabled: true
+          size: "5Gi"
+
         resources:
           requests:
             cpu: "200m"
