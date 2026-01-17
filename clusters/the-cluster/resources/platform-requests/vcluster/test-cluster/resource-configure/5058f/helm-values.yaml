@@ -12,8 +12,9 @@ data:
           version: "v1.34.3"
       statefulSet:
         persistence:
-          enabled: true
-          size: "1Gi"
+          volumeClaim:
+            enabled: true
+            size: "2Gi"
 
         resources:
           requests:
