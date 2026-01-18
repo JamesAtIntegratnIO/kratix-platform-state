@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vcluster-dev-test
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: vcluster-dev-test
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.30.4
+    helm:
+      releaseName: dev-test
+      valuesObject:
+        {controlPlane: {distro: {k8s: {enabled: true, version: "v1.34.3"}}, statefulSet: {highAvailability: {replicas: 1}, persistence: {volumeClaim: {enabled: false, size: "5Gi"}}, resources: {requests: {cpu: "200m", memory: "512Mi"}, limits: {cpu: "1000m", memory: "1Gi"}}}, coredns: {deployment: {replicas: 1}}, service: {enabled: true, annotations: {external-dns.alpha.kubernetes.io/hostname: "dev-test.integratn.tech"}, spec: {type: LoadBalancer, loadBalancerIP: "10.0.6.100", ports: [{name: https, port: 8443, targetPort: 8443, protocol: TCP}]}}}, networking: {advanced: {clusterDomain: "cluster.local"}}, sync: {toHost: {pods: {enabled: true}}}}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-dev-test
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
