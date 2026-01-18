@@ -41,3 +41,4 @@ data:
           enabled: true
         services:
           enabled: true
+    platformReconcileAt: "2026-01-18T19:40:00Z"
