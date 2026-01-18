@@ -86,6 +86,7 @@ spec:
           toHost:
             pods:
               enabled: true
+        platformReconcileAt: "2026-01-18T19:40:00Z"
   destination:
     server: https://kubernetes.default.svc
     namespace: vcluster-dev-test
