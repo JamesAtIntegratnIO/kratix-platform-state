@@ -81,9 +81,7 @@ spec:
                       integratn.tech/cluster-issuer: letsencrypt-prod
         telemetry:
           enabled: false
-        networking:
-          advanced:
-            clusterDomain: "cluster.local"
+        networking: {advanced: {clusterDomain: "cluster.local"}}
         sync:
           toHost:
             pods:
