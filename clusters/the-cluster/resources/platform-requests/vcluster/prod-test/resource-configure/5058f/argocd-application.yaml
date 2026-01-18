@@ -16,7 +16,76 @@ spec:
     helm:
       releaseName: prod-test
       valuesObject:
-        {controlPlane: {distro: {k8s: {enabled: true, version: "v1.34.3"}}, statefulSet: {highAvailability: {replicas: 1}, image: {repository: "loft-sh/vcluster-oss"}, persistence: {volumeClaim: {enabled: false, size: "5Gi"}}, resources: {requests: {cpu: "500m", memory: "1Gi"}, limits: {cpu: "2", memory: "2Gi"}}}, coredns: {enabled: true, deployment: {replicas: 1}}, service: {enabled: true, annotations: {external-dns.alpha.kubernetes.io/hostname: "prod-test.integratn.tech"}, spec: {type: LoadBalancer, loadBalancerIP: "10.0.9.100", ports: [{name: https, port: 443, targetPort: 8443, protocol: TCP}]}}}, deploy: {metallb: {enabled: true}}, integrations: {externalSecrets: {enabled: true, webhook: {enabled: true}, sync: {fromHost: {clusterStores: {enabled: true, selector: {matchLabels: {integratn.tech/cluster-secret-store: onepassword-store}}}}}}, metricsServer: {enabled: true}, certManager: {enabled: true, sync: {fromHost: {clusterIssuers: {enabled: true, selector: {labels: {integratn.tech/cluster-issuer: letsencrypt-prod}}}}}}}, telemetry: {enabled: false}, networking: {advanced: {clusterDomain: "cluster.local"}}, sync: {toHost: {pods: {enabled: true}}}}
+        controlPlane:
+          distro:
+            k8s:
+              enabled: true
+              version: "v1.34.3"
+          statefulSet:
+            highAvailability:
+              replicas: 1
+            image:
+              repository: "loft-sh/vcluster-oss"
+            persistence:
+              volumeClaim:
+                enabled: false
+                size: "5Gi"
+            resources:
+              requests:
+                cpu: "500m"
+                memory: "1Gi"
+              limits:
+                cpu: "2"
+                memory: "2Gi"
+          coredns:
+            enabled: true
+            deployment:
+              replicas: 1
+          service:
+            enabled: true
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: "prod-test.integratn.tech"
+            spec:
+              type: LoadBalancer
+              loadBalancerIP: "10.0.9.100"
+              ports:
+                - name: https
+                  port: 443
+                  targetPort: 8443
+                  protocol: TCP
+        deploy:
+          metallb:
+            enabled: true
+        integrations:
+          externalSecrets:
+            enabled: true
+            webhook:
+              enabled: true
+            sync:
+              fromHost:
+                clusterStores:
+                  enabled: true
+                  selector:
+                    matchLabels:
+                      integratn.tech/cluster-secret-store: onepassword-store
+          metricsServer:
+            enabled: true
+          certManager:
+            enabled: true
+            sync:
+              fromHost:
+                clusterIssuers:
+                  enabled: true
+                  selector:
+                    labels:
+                      integratn.tech/cluster-issuer: letsencrypt-prod
+        telemetry:
+          enabled: false
+        networking: {advanced: {clusterDomain: "cluster.local"}}
+        sync:
+          toHost:
+            pods:
+              enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: vcluster-prod-test
