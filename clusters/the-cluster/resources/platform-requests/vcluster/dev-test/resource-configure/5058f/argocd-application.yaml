@@ -57,15 +57,21 @@ spec:
           toHost:
             pods:
               enabled: true
+          fromHost:
+            configMaps:
+              enabled: true
+              mappings:
+                byName:
+                  vcluster-dev-test/coredns: kube-system/coredns
         experimental:
           deploy:
-            vcluster:
+            host:
               manifests: |
                 apiVersion: v1
                 kind: ConfigMap
                 metadata:
                   name: coredns
-                  namespace: kube-system
+                  namespace: vcluster-dev-test
                 data:
                   Corefile: |-
                     .:1053 {
