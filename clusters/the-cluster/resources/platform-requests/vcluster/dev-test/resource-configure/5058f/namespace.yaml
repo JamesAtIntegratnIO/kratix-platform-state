@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vcluster-dev-test
+  labels:
+    app: vcluster
+    instance: dev-test
