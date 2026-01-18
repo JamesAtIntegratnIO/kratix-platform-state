@@ -16,43 +16,7 @@ spec:
     helm:
       releaseName: custom-test
       valuesObject:
-        controlPlane:
-          distro:
-            k8s:
-              enabled: true
-              version: "v1.34.3"
-          statefulSet:
-            highAvailability:
-              replicas: 1
-            image:
-              repository: "loft-sh/vcluster-oss"
-            persistence:
-              volumeClaim:
-                enabled: false
-                size: "5Gi"
-            resources:
-              requests:
-                cpu: "500m"
-                memory: "1Gi"
-              limits:
-                cpu: "2"
-                memory: "2Gi"
-          coredns:
-            enabled: true
-            deployment:
-              replicas: 1
-          service:
-            enabled: true
-            annotations:
-              external-dns.alpha.kubernetes.io/hostname: "custom-test.integratn.tech"
-            spec:
-              type: LoadBalancer
-              loadBalancerIP: "10.0.8.100"
-              ports:
-                - name: https
-                  port: 443
-                  targetPort: 8443
-                  protocol: TCP
+        controlPlane: {distro: {k8s: {enabled: true, version: "v1.34.3"}}, statefulSet: {highAvailability: {replicas: 1}, image: {repository: "loft-sh/vcluster-oss"}, persistence: {volumeClaim: {enabled: false, size: "5Gi"}}, resources: {requests: {cpu: "500m", memory: "1Gi"}, limits: {cpu: "2", memory: "2Gi"}}}, coredns: {enabled: true, deployment: {replicas: 1}}, service: {enabled: true, annotations: {external-dns.alpha.kubernetes.io/hostname: "custom-test.integratn.tech"}, spec: {type: LoadBalancer, loadBalancerIP: "10.0.8.100", ports: [{name: https, port: 443, targetPort: 8443, protocol: TCP}]}}}
         deploy:
           metallb:
             enabled: true
