@@ -23,7 +23,7 @@ spec:
               version: "v1.34.3"
           statefulSet:
             highAvailability:
-              replicas: 2
+              replicas: 1
             persistence:
               volumeClaim:
                 enabled: false
