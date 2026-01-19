@@ -87,3 +87,11 @@ data:
           mappings:
             byName:
               "external-secrets/eso-onepassword-token": "external-secrets/eso-onepassword-token"
+    rbac:
+      clusterRole:
+        extraRules:
+          - apiGroups: [""]
+            resources: ["secrets"]
+            verbs: ["get", "list", "watch"]
+            resourceNames:
+              - "eso-onepassword-token"
