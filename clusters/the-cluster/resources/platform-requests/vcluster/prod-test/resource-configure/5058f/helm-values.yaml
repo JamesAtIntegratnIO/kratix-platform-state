@@ -79,3 +79,9 @@ data:
       toHost:
         pods:
           enabled: true
+      fromHost:
+        secrets:
+          enabled: true
+          mappings:
+            byName:
+              "external-secrets/eso-onepassword-token": "external-secrets/eso-onepassword-token"
