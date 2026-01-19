@@ -30,6 +30,10 @@ data:
         enabled: true
         deployment:
           replicas: 1
+      proxy:
+        extraSANs:
+          - prod-test.integratn.tech
+          - 10.0.4.212
       service:
         enabled: true
         annotations:
