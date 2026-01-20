@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
-    platform.integratn.tech/reconcile-at: "2026-01-20T20:09:43Z"
+    platform.integratn.tech/reconcile-at: "2026-01-20T20:12:12Z"
   labels:
     {}
   finalizers:
@@ -134,8 +134,8 @@ spec:
     server: https://kubernetes.default.svc
     namespace: vcluster-test-2
   syncPolicy:
-  automated:
-    prune: true
-    selfHeal: true
-  syncOptions:
-    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
