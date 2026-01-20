@@ -5,10 +5,12 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
+    platform.integratn.tech/reconcile-at: "2026-01-20T19:25:45Z"
   labels:
     {}
   finalizers:
-  - - resources-finalizer.argocd.argoproj.iospec:
+  - resources-finalizer.argocd.argoproj.io
+spec:
   project: vcluster-test
   source:
     repoURL: https://charts.loft.sh
