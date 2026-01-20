@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: vcluster-test-4
-  labels:
-    app: vcluster
-    instance: test4
