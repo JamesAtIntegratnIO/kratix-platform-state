@@ -86,8 +86,8 @@ spec:
                 clusterIssuers:
                   enabled: true
                   selector:
-                    labels: ""
-                integratn.tech/cluster-issuer: letsencrypt-prod
+                    labels:
+                      integratn.tech/cluster-issuer: letsencrypt-prod
           externalSecrets:
             enabled: true
             sync:
@@ -95,8 +95,8 @@ spec:
                 clusterStores:
                   enabled: true
                   selector:
-                    matchLabels: ""
-                integratn.tech/cluster-secret-store: onepassword-store
+                    matchLabels:
+                      integratn.tech/cluster-secret-store: onepassword-store
             webhook:
               enabled: true
           metricsServer:
