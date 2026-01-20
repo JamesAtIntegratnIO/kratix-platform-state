@@ -1,0 +1,27 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: ArgoCDProject
+metadata:
+  name: vcluster-test-4
+  namespace: platform-requests
+spec:
+  name: vcluster-test-4
+  namespace: argocd
+  description: VCluster project for test4
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator
+    kratix.io/resource-request: test4
+    argocd.argoproj.io/project-group: appteam
+  sourceRepos:
+    - https://charts.loft.sh
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: vcluster-test-4
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
