@@ -84,6 +84,8 @@ spec:
         deploy:
           metallb:
             enabled: true
+        exportKubeConfig:
+          server: https://media.integratn.tech:8443
         integrations:
           certManager:
             enabled: true
