@@ -1,0 +1,140 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vcluster-test4
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  labels:
+    {}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: vcluster-test-4
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.30.4
+    helm:
+      releaseName: test4
+      valuesObject:
+        controlPlane:
+          coredns:
+            deployment:
+              replicas: 1
+            enabled: true
+            overwriteConfig: |
+              .:1053 {
+                errors
+                health
+                ready
+                kubernetes cluster.local in-addr.arpa ip6.arpa {
+                  pods insecure
+                  fallthrough in-addr.arpa ip6.arpa
+                  ttl 30
+                }
+                prometheus 0.0.0.0:9153
+                forward . /etc/resolv.conf
+                cache 30
+                loop
+                reload
+                loadbalance
+              }
+          distro:
+            k8s:
+              enabled: true
+              version: v1.34.3
+          proxy:
+            extraSANs:
+              - test4.integratn.tech
+          service:
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: test4.integratn.tech
+            enabled: true
+            spec:
+              ports:
+                - name: https
+                  port: 443
+                  protocol: TCP
+                  targetPort: 8443
+              type: LoadBalancer
+          statefulSet:
+            highAvailability:
+              replicas: 1
+            image:
+              repository: loft-sh/vcluster-oss
+            persistence:
+              volumeClaim:
+                enabled: false
+                size: 5Gi
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+              requests:
+                cpu: 200m
+                memory: 512Mi
+        deploy:
+          metallb:
+            enabled: true
+        integrations:
+          certManager:
+            enabled: true
+            sync:
+              fromHost:
+                clusterIssuers:
+                  enabled: true
+                  selector:
+                    labels:
+                      integratn.tech/cluster-issuer: letsencrypt-prod
+          externalSecrets:
+            enabled: true
+            sync:
+              fromHost:
+                clusterStores:
+                  enabled: true
+                  selector:
+                    matchLabels:
+                      integratn.tech/cluster-secret-store: onepassword-store
+            webhook:
+              enabled: true
+          metricsServer:
+            enabled: true
+        networking:
+          advanced:
+            clusterDomain: cluster.local
+        rbac:
+          clusterRole:
+            enabled: true
+            extraRules:
+              - apiGroups:
+                  - ""
+                resourceNames:
+                  - eso-onepassword-token
+                resources:
+                  - secrets
+                verbs:
+                  - get
+                  - list
+                  - watch
+        sync:
+          fromHost:
+            secrets:
+              enabled: true
+              mappings:
+                byName:
+                  external-secrets/eso-onepassword-token: external-secrets/eso-onepassword-token
+          toHost:
+            pods:
+              enabled: true
+        telemetry:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-test-4
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
