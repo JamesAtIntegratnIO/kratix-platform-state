@@ -1,9 +1,0 @@
-apiVersion: platform.integratn.tech/v1alpha1
-kind: VClusterCoredns
-metadata:
-  name: test4
-  namespace: platform-requests
-spec:
-  name: test4
-  targetNamespace: vcluster-test-4
-  clusterDomain: cluster.local
