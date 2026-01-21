@@ -1,0 +1,26 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: ArgoCDApplication
+metadata:
+  name: vcluster-media
+  namespace: platform-requests
+spec:
+  name: vcluster-media
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  project: vcluster-media
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.30.4
+    helm:
+      releaseName: media
+      valuesObject:
+        {controlPlane: {distro: {k8s: {enabled: true, version: "v1.34.3"}}, statefulSet: {highAvailability: {replicas: 3}, image: {repository: "loft-sh/vcluster-oss"}, persistence: {volumeClaim: {enabled: true, size: "10Gi"}}, resources: {requests: {cpu: "200m", memory: "2Gi"}, limits: {cpu: "1000m", memory: "2Gi"}}}, coredns: {enabled: true, deployment: {replicas: 2}, overwriteConfig: ".:1053 {\n  errors\n  health\n  ready\n  kubernetes cluster.local in-addr.arpa ip6.arpa {\n    pods insecure\n    fallthrough in-addr.arpa ip6.arpa\n    ttl 30\n  }\n  prometheus 0.0.0.0:9153\n  forward . /etc/resolv.conf\n  cache 30\n  loop\n  reload\n  loadbalance\n}\n"}, proxy: {extraSANs: ["media.integratn.tech"]}, service: {enabled: true, annotations: {external-dns.alpha.kubernetes.io/hostname: "media.integratn.tech"}, spec: {type: LoadBalancer, ports: [{name: https, port: 8443, targetPort: 8443, protocol: TCP}]}}, backingStore: {etcd: {deploy: {enabled: true, statefulSet: {highAvailability: {replicas: 3}}}}}}, deploy: {metallb: {enabled: true}}, integrations: {externalSecrets: {enabled: true, webhook: {enabled: true}, sync: {fromHost: {clusterStores: {enabled: true, selector: {matchLabels: {integratn.tech/cluster-secret-store: onepassword-store}}}}}}, metricsServer: {enabled: true}, certManager: {enabled: true, sync: {fromHost: {clusterIssuers: {enabled: true, selector: {labels: {integratn.tech/cluster-issuer: letsencrypt-prod}}}}}}}, telemetry: {enabled: false}, networking: {advanced: {clusterDomain: "cluster.local"}}, sync: {toHost: {pods: {enabled: true}}, fromHost: {storageClasses: {enabled: true}, secrets: {enabled: true, mappings: {byName: {"external-secrets/eso-onepassword-token": "external-secrets/eso-onepassword-token"}}}}}, rbac: {clusterRole: {enabled: true, extraRules: [{apiGroups: [""], resources: ["secrets"], verbs: ["get", "list", "watch"], resourceNames: ["eso-onepassword-token"]}]}}, exportKubeConfig: {server: "https://media.integratn.tech:8443"}}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-media
+  syncPolicy:
+    {automated: {selfHeal: true, prune: true}, syncOptions: [CreateNamespace=true]}
