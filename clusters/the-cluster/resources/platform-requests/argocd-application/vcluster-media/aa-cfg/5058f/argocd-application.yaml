@@ -19,6 +19,10 @@ spec:
       releaseName: media
       valuesObject:
         controlPlane:
+          backingStore:
+            etcd:
+              deploy:
+                enabled: true
           coredns:
             deployment:
               replicas: 2
