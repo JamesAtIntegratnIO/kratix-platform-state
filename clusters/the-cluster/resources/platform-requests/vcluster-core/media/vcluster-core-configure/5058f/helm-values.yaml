@@ -65,6 +65,9 @@ data:
         etcd:
           deploy:
             enabled: true
+            statefulSet:
+              highAvailability:
+                replicas: 3
     deploy:
       metallb:
         enabled: true
