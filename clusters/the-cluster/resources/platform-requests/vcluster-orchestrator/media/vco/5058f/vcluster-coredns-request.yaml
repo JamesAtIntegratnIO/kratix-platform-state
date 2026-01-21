@@ -1,0 +1,9 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: VClusterCoredns
+metadata:
+  name: media
+  namespace: platform-requests
+spec:
+  name: media
+  targetNamespace: vcluster-media
+  clusterDomain: cluster.local
