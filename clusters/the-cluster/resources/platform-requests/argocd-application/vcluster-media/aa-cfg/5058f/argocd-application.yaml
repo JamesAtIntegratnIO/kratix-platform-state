@@ -23,6 +23,9 @@ spec:
             etcd:
               deploy:
                 enabled: true
+                statefulSet:
+                  highAvailability:
+                    replicas: 3
           coredns:
             deployment:
               replicas: 2
