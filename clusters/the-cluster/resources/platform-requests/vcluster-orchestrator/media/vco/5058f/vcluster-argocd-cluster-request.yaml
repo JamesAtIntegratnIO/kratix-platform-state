@@ -12,6 +12,7 @@ spec:
     cluster_name: media
     cluster_role: worker
     environment: production
+    enable_argocd: "true"
   annotations:
     addons_repo_url: https://github.com/jamesatintegratnio/gitops_homelab_2_0
     addons_repo_revision: main
