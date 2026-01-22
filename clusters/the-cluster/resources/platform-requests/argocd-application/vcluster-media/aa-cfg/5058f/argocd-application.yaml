@@ -5,8 +5,8 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
-  labels:
-    {}
+    platform.integratn.tech/reconcile-at: "2026-01-22T16:20:00Z"
+
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
