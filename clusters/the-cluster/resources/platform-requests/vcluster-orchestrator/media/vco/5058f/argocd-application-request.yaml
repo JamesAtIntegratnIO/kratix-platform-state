@@ -142,6 +142,10 @@ spec:
                 port: 443
                 protocol: TCP
                 targetPort: 8443
+              - name: https-alt
+                port: 8443
+                protocol: TCP
+                targetPort: 8443
   destination:
     server: https://kubernetes.default.svc
     namespace: vcluster-media
