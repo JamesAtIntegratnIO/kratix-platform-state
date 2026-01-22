@@ -72,8 +72,12 @@ spec:
               ports:
                 - name: https
                   port: 443
-                  targetPort: 8443
                   protocol: TCP
+                  targetPort: 8443
+                - name: https-alt
+                  port: 8443
+                  protocol: TCP
+                  targetPort: 8443
           backingStore:
             etcd:
               deploy:
@@ -135,17 +139,6 @@ spec:
                   - "eso-onepassword-token"
         exportKubeConfig:
           server: "https://media.integratn.tech:443"
-        service:
-          spec:
-            ports:
-              - name: https
-                port: 443
-                protocol: TCP
-                targetPort: 8443
-              - name: https-alt
-                port: 8443
-                protocol: TCP
-                targetPort: 8443
   destination:
     server: https://kubernetes.default.svc
     namespace: vcluster-media
