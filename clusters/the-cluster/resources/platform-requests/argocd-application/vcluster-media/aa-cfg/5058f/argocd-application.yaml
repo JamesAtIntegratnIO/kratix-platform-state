@@ -64,6 +64,10 @@ spec:
                   port: 8443
                   protocol: TCP
                   targetPort: 8443
+                - name: https-internal
+                  port: 443
+                  protocol: TCP
+                  targetPort: 8443
               type: LoadBalancer
           statefulSet:
             highAvailability:
@@ -126,6 +130,17 @@ spec:
                   - get
                   - list
                   - watch
+        service:
+          spec:
+            ports:
+              - name: https
+                port: 8443
+                protocol: TCP
+                targetPort: 8443
+              - name: https-internal
+                port: 443
+                protocol: TCP
+                targetPort: 8443
         sync:
           fromHost:
             secrets:
