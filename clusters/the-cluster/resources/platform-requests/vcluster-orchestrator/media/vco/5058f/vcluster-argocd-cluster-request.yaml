@@ -9,6 +9,7 @@ spec:
   onepasswordItem: vcluster-media-kubeconfig
   labels:
     argocd.argoproj.io/secret-type: cluster
+    akuity.io/argo-cd-cluster-name: media
     cluster_name: media
     cluster_role: vcluster
     cluster_type: vcluster
@@ -32,3 +33,7 @@ spec:
     environment: production
     platform.integratn.tech/base-domain: integratn.tech
     platform.integratn.tech/base-domain-sanitized: integratn-tech
+    workload_repo_url: https://github.com/jamesatintegratnio/gitops_homelab_2_0
+    workload_repo_basepath: 
+    workload_repo_path: workloads
+    workload_repo_revision: main
