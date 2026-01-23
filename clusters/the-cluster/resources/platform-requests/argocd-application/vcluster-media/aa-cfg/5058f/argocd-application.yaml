@@ -136,6 +136,8 @@ spec:
             storageClasses:
               enabled: true
           toHost:
+            persistentVolumes:
+              enabled: true
             pods:
               enabled: true
         telemetry:
