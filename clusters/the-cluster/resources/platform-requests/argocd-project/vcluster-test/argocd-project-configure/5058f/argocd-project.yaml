@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: vcluster-test
+  namespace: argocd
+  annotations:
+    {}
+  labels:
+    {}
+spec:
+  description: Project for vcluster test
+  sourceRepos:
+    - https://github.com/jamesatintegratnio/gitops_homelab_2_0
+    - https://charts.loft.sh
+  destinations:
+    - namespace: '*'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    []
