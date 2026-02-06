@@ -31,15 +31,18 @@ spec:
               enabled: true
               image:
                 tag: v1.34.3
-          persistence:
-            volumeClaim:
-              enabled: true
-              size: 10Gi
+          ingress:
+            enabled: true
+            host: media.integratn.tech
           service:
             annotations: {}
           statefulSet:
             highAvailability:
               replicas: 3
+            persistence:
+              volumeClaim:
+                enabled: true
+                size: 10Gi
             resources:
               limits:
                 cpu: 2
@@ -47,12 +50,6 @@ spec:
               requests:
                 cpu: 500m
                 memory: 2Gi
-        externalDNS:
-          domain: media.integratn.tech
-          enabled: true
-        ingress:
-          enabled: true
-          host: media.integratn.tech
         networking:
           advanced:
             clusterDomain: ""
@@ -76,7 +73,7 @@ spec:
             storageClasses:
               enabled: true
         telemetry:
-          enableTelemetry: false
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: vcluster-media
