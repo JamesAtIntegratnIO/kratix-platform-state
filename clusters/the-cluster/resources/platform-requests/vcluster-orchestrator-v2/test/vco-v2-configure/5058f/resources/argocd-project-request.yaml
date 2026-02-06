@@ -9,6 +9,7 @@ metadata:
     kratix.io/promise-name: vcluster-orchestrator-v2
     kratix.io/resource-name: test
 spec:
+  namespace: argocd
   name: vcluster-test
   description: "Project for vcluster test"
   sourceRepos:
