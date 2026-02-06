@@ -28,6 +28,9 @@ spec:
               enabled: true
               image:
                 tag: v1.34.3
+          ingress:
+            enabled: true
+            host: test.integratn.tech
           service:
             annotations:
               io.cilium/lb-ipam-ips: 10.0.4.100
@@ -41,12 +44,6 @@ spec:
               requests:
                 cpu: 200m
                 memory: 512Mi
-        externalDNS:
-          domain: test.integratn.tech
-          enabled: true
-        ingress:
-          enabled: true
-          host: test.integratn.tech
         networking:
           advanced:
             clusterDomain: ""
@@ -70,7 +67,7 @@ spec:
             storageClasses:
               enabled: false
         telemetry:
-          enableTelemetry: false
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: vcluster-test
