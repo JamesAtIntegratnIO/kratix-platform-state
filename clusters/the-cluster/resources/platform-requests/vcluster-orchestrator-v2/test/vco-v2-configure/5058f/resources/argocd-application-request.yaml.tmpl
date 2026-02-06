@@ -1,0 +1,84 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: ArgoCDApplication
+metadata:
+  name: test
+  namespace: platform-requests
+  labels:
+    app.kubernetes.io/name: argocd-application
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+spec:
+  name: vc-test
+  project: vcluster-test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-test
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.30.4
+    helm:
+      releaseName: test
+      valuesObject:
+        vcluster:
+          image:
+            tag: v1.34.3
+        controlPlane:
+          distro:
+            k8s:
+              enabled: true
+          statefulSet:
+            highAvailability:
+              replicas: 1
+          service:
+            type: LoadBalancer
+            annotations:
+              io.cilium/lb-ipam-ips: 10.0.4.100
+          backingStore:
+            etcd:
+              deploy:
+                enabled: false
+          coredns:
+            enabled: false
+        sync:
+          toHost:
+            ingresses:
+              enabled: true
+            services:
+              enabled: true
+            persistentVolumeClaims:
+              enabled: true
+            storageClasses:
+              enabled: false
+          fromHost:
+            ingressClasses:
+              enabled: true
+            storageClasses:
+              enabled: false
+        networking:
+          replicateServices:
+            fromHost:
+              - from: default/kubernetes
+                to: default/kubernetes
+        integrations:
+          externalDNS:
+            enabled: true
+            domain: test.integratn.tech
+            sync: enabled
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        telemetry:
+          disabled: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+
