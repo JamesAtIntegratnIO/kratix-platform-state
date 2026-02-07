@@ -18,7 +18,7 @@ spec:
   source:
     repoURL: https://charts.loft.sh
     chart: vcluster
-    targetRevision: 0.30.4
+    targetRevision: 0.31.0
     helm:
       releaseName: media
       valuesObject:
@@ -30,7 +30,7 @@ spec:
                 tag: v1.34.3
           statefulSet:
             highAvailability:
-              replicas: 1
+              replicas: 3
             resources:
               requests:
                 cpu: 500m
@@ -45,7 +45,13 @@ spec:
           backingStore:
             database:
               embedded:
+                enabled: false
+            etcd:
+              deploy:
                 enabled: true
+                statefulSet:
+                  highAvailability:
+                    replicas: 3
           coredns:
             enabled: false
           ingress:
