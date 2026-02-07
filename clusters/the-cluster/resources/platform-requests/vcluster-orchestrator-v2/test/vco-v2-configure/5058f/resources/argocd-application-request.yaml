@@ -65,8 +65,6 @@ spec:
               enabled: true
             persistentVolumeClaims:
               enabled: true
-            storageClasses:
-              enabled: false
           fromHost:
             ingressClasses:
               enabled: true
