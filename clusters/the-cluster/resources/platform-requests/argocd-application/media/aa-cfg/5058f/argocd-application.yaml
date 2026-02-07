@@ -18,9 +18,6 @@ spec:
       valuesObject:
         controlPlane:
           backingStore:
-            database:
-              embedded:
-                enabled: false
             etcd:
               deploy:
                 enabled: true
