@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: vcluster-media
+  namespace: argocd
+  annotations:
+    {}
+  labels:
+    {}
+spec:
+  description: Project for vcluster media
+  sourceRepos:
+    - https://github.com/jamesatintegratnio/gitops_homelab_2_0
+    - https://charts.loft.sh
+  destinations:
+    - namespace: '*'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
