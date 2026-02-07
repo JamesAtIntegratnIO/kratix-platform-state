@@ -35,7 +35,7 @@ spec:
             annotations: {}
           statefulSet:
             highAvailability:
-              replicas: 3
+              replicas: 1
             persistence:
               volumeClaim:
                 enabled: true
