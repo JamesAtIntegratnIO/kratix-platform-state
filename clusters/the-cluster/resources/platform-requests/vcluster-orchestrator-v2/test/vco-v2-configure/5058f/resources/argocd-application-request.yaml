@@ -1,0 +1,187 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: ArgoCDApplication
+metadata:
+  name: test
+  namespace: platform-requests
+  labels:
+    app.kubernetes.io/name: argocd-application
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+spec:
+  namespace: argocd
+  name: vc-test
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  project: vcluster-test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-test
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.30.4
+    helm:
+      releaseName: test
+      valuesObject:
+        controlPlane:
+          distro:
+            k8s:
+              enabled: true
+              image:
+                tag: v1.34.3
+          serviceMonitor:
+            enabled: true
+            labels:
+              vcluster_name: test
+              vcluster_namespace: vcluster-test
+              environment: development
+              cluster_role: vcluster
+          statefulSet:
+            highAvailability:
+              replicas: 1
+            scheduling:
+              podManagementPolicy: Parallel
+              priorityClassName: system-cluster-critical
+            imagePullPolicy: Always
+            image:
+              repository: loft-sh/vcluster-oss
+            persistence:
+              volumeClaim:
+                enabled: false
+                size: 5Gi
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+          coredns:
+            enabled: true
+            deployment:
+              replicas: 1
+            overwriteConfig: |
+              .:1053 {
+                errors
+                health
+                ready
+                kubernetes cluster.local in-addr.arpa ip6.arpa {
+                  pods insecure
+                  fallthrough in-addr.arpa ip6.arpa
+                  ttl 30
+                }
+                prometheus 0.0.0.0:9153
+                forward . /etc/resolv.conf
+                cache 30
+                loop
+                reload
+                loadbalance
+              }
+          backingStore:
+            etcd:
+              deploy:
+                enabled: false
+          proxy:
+            extraSANs:
+              - test.integratn.tech
+              - 10.0.4.100
+          ingress:
+            enabled: true
+            host: test.integratn.tech
+          service:
+            enabled: true
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: test.integratn.tech
+            spec:
+              type: LoadBalancer
+              loadBalancerIP: 10.0.4.100
+              ports:
+                - name: https
+                  port: 443
+                  targetPort: 8443
+                  protocol: TCP
+          advanced:
+            podDisruptionBudget:
+              enabled: true
+              minAvailable: 1
+        deploy:
+          metallb:
+            enabled: true
+        integrations:
+          externalSecrets:
+            enabled: true
+            webhook:
+              enabled: true
+            sync:
+              fromHost:
+                clusterStores:
+                  enabled: true
+                  selector:
+                    matchLabels:
+                      integratn.tech/cluster-secret-store: onepassword-store
+          metricsServer:
+            enabled: true
+          certManager:
+            enabled: true
+            sync:
+              fromHost:
+                clusterIssuers:
+                  enabled: true
+                  selector:
+                    labels:
+                      integratn.tech/cluster-issuer: letsencrypt-prod
+        telemetry:
+          enabled: false
+        logging:
+          encoding: json
+        networking:
+          advanced:
+            clusterDomain: cluster.local
+          replicateServices:
+            fromHost:
+              - from: default/kubernetes
+                to: default/kubernetes
+        sync:
+          toHost:
+            pods:
+              enabled: true
+            persistentVolumes:
+              enabled: true
+            ingresses:
+              enabled: true
+            networkPolicies:
+              enabled: false
+          fromHost:
+            storageClasses:
+              enabled: true
+            ingressClasses:
+              enabled: true
+            secrets:
+              enabled: true
+              mappings:
+                byName:
+                  external-secrets/eso-onepassword-token: external-secrets/eso-onepassword-token
+        rbac:
+          clusterRole:
+            enabled: true
+            extraRules:
+              - apiGroups:
+                  - ""
+                resources:
+                  - secrets
+                verbs:
+                  - get
+                  - list
+                  - watch
+                resourceNames:
+                  - eso-onepassword-token
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+
