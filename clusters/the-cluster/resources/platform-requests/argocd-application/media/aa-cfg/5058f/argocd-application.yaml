@@ -20,13 +20,7 @@ spec:
           backingStore:
             database:
               embedded:
-                enabled: false
-            etcd:
-              deploy:
                 enabled: true
-                statefulSet:
-                  highAvailability:
-                    replicas: 3
           coredns:
             enabled: false
           distro:
