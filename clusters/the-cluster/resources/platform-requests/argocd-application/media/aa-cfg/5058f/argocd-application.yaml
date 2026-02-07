@@ -4,9 +4,10 @@ metadata:
   name: vc-media
   namespace: argocd
   annotations:
-    {}
+    argocd.argoproj.io/sync-wave: "0"
 
-
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: vcluster-media
   source:
@@ -72,6 +73,7 @@ spec:
               replicas: 3
             image:
               repository: loft-sh/vcluster-oss
+            imagePullPolicy: Always
             persistence:
               volumeClaim:
                 enabled: true
