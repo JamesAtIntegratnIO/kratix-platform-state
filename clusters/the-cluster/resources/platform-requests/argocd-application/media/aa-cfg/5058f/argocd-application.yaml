@@ -70,8 +70,6 @@ spec:
               enabled: true
             services:
               enabled: true
-            storageClasses:
-              enabled: true
         telemetry:
           enabled: false
   destination:
