@@ -1,0 +1,76 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vc-media
+  namespace: argocd
+  annotations:
+    {}
+
+
+spec:
+  project: vcluster-media
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.30.4
+    helm:
+      releaseName: media
+      valuesObject:
+        controlPlane:
+          backingStore:
+            database:
+              embedded:
+                enabled: true
+          coredns:
+            enabled: false
+          distro:
+            k8s:
+              enabled: true
+              image:
+                tag: v1.34.3
+          ingress:
+            enabled: true
+            host: media.integratn.tech
+          service:
+            annotations: {}
+          statefulSet:
+            highAvailability:
+              replicas: 3
+            persistence:
+              volumeClaim:
+                enabled: true
+                size: 10Gi
+            resources:
+              limits:
+                cpu: 2
+                memory: 2Gi
+              requests:
+                cpu: 500m
+                memory: 2Gi
+        networking:
+          advanced:
+            clusterDomain: ""
+          replicateServices:
+            fromHost:
+              - from: default/kubernetes
+                to: default/kubernetes
+        sync:
+          fromHost:
+            ingressClasses:
+              enabled: true
+            storageClasses:
+              enabled: true
+          toHost:
+            ingresses:
+              enabled: true
+            persistentVolumeClaims:
+              enabled: true
+            services:
+              enabled: true
+        telemetry:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-media
+  syncPolicy:
+    {}
