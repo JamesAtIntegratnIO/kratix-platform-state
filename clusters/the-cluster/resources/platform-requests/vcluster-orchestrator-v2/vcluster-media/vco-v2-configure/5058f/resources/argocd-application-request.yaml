@@ -115,7 +115,7 @@ spec:
                 secret:
                   secretName: vcluster-media-certs
               volumeClaim:
-                enabled: true
+                enabled: false
                 size: 10Gi
             resources:
               limits:
