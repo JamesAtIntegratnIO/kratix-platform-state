@@ -145,7 +145,7 @@ spec:
         sync:
           fromHost:
             ingressClasses:
-              enabled: true
+              enabled: false
             secrets:
               enabled: true
               mappings:
@@ -155,7 +155,7 @@ spec:
               enabled: true
           toHost:
             ingresses:
-              enabled: true
+              enabled: false
             networkPolicies:
               enabled: false
             persistentVolumes:
