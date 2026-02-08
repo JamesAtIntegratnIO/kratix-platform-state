@@ -12,7 +12,7 @@ spec:
   namespace: argocd
   name: vc-media
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+              ports:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   project: vcluster-media
@@ -90,9 +90,17 @@ spec:
           proxy:
             extraSANs:
               - media.integratn.tech
-          ingress:
+          service:
             enabled: true
-            host: media.integratn.tech
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
+            spec:
+              type: LoadBalancer
+              ports:
+                - name: https
+                  port: 443
+                  targetPort: 8443
+                  protocol: TCP
           advanced:
             podDisruptionBudget:
               enabled: true
