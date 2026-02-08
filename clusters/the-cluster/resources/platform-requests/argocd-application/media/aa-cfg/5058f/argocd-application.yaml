@@ -4,7 +4,7 @@ metadata:
   name: vc-media
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    {}
 
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -55,12 +55,20 @@ spec:
               enabled: true
               image:
                 tag: v1.34.3
-          ingress:
-            enabled: true
-            host: media.integratn.tech
           proxy:
             extraSANs:
               - media.integratn.tech
+          service:
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
+            enabled: true
+            spec:
+              ports:
+                - name: https
+                  port: 443
+                  protocol: TCP
+                  targetPort: 8443
+              type: LoadBalancer
           serviceMonitor:
             enabled: true
             labels:
