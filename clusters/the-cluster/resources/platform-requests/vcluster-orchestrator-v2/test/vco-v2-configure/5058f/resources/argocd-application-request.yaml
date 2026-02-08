@@ -12,7 +12,8 @@ spec:
   namespace: argocd
   name: vc-test
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+              loadBalancerIP: 10.0.4.100
+              ports:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   project: vcluster-test
@@ -88,9 +89,6 @@ spec:
             extraSANs:
               - test.integratn.tech
               - 10.0.4.100
-          ingress:
-            enabled: true
-            host: test.integratn.tech
           service:
             enabled: true
             annotations:
