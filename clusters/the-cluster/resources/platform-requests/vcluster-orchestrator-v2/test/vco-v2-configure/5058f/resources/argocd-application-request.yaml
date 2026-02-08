@@ -86,27 +86,27 @@ spec:
               deploy:
                 enabled: false
 
-        ingress:
-          enabled: false
+          ingress:
+            enabled: false
 
-        proxy:
-          extraSANs:
-            - test.integratn.tech
-            - 10.0.4.100
+          proxy:
+            extraSANs:
+              - test.integratn.tech
+              - 10.0.4.100
 
 
-        service:
-          enabled: true
-          annotations:
-            external-dns.alpha.kubernetes.io/hostname: test.integratn.tech
-          spec:
-            type: LoadBalancer
-            loadBalancerIP: 10.0.4.100
-            ports:
-              - name: https
-                port: 443
-                targetPort: 8443
-                protocol: TCP
+          service:
+            enabled: true
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: test.integratn.tech
+            spec:
+              type: LoadBalancer
+              loadBalancerIP: 10.0.4.100
+              ports:
+                - name: https
+                  port: 443
+                  targetPort: 8443
+                  protocol: TCP
         deploy:
           metallb:
             enabled: true
