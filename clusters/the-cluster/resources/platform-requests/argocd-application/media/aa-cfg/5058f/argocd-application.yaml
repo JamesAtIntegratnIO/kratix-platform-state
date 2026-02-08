@@ -55,6 +55,8 @@ spec:
               enabled: true
               image:
                 tag: v1.34.3
+          ingress:
+            enabled: false
           proxy:
             extraSANs:
               - media.integratn.tech
