@@ -1,7 +1,7 @@
 apiVersion: platform.integratn.tech/v1alpha1
 kind: ArgoCDApplication
 metadata:
-  name: vc-vcluster-media
+  name: vcluster-media
   namespace: platform-requests
   labels:
     app.kubernetes.io/name: argocd-application
@@ -9,7 +9,7 @@ metadata:
     kratix.io/promise-name: vcluster-orchestrator-v2
     kratix.io/resource-name: vcluster-media
 spec:
-  name: vc-vcluster-media
+  name: vcluster-media
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -113,7 +113,7 @@ spec:
               addVolumes:
               - name: etcd-certs
                 secret:
-                  secretName: media-certs
+                  secretName: vcluster-media-certs
               volumeClaim:
                 enabled: true
                 size: 10Gi
