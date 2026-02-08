@@ -89,25 +89,25 @@ spec:
                   highAvailability:
                     replicas: 3
 
-        ingress:
-          enabled: false
+          ingress:
+            enabled: false
 
-        proxy:
-          extraSANs:
-            - media.integratn.tech
+          proxy:
+            extraSANs:
+              - media.integratn.tech
 
 
-        service:
-          enabled: true
-          annotations:
-            external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
-          spec:
-            type: LoadBalancer
-            ports:
-              - name: https
-                port: 443
-                targetPort: 8443
-                protocol: TCP
+          service:
+            enabled: true
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
+            spec:
+              type: LoadBalancer
+              ports:
+                - name: https
+                  port: 443
+                  targetPort: 8443
+                  protocol: TCP
         deploy:
           metallb:
             enabled: true
