@@ -1,7 +1,7 @@
 apiVersion: platform.integratn.tech/v1alpha1
 kind: ArgoCDApplication
 metadata:
-  name: media
+  name: vc-media
   namespace: platform-requests
   labels:
     app.kubernetes.io/name: argocd-application
@@ -9,10 +9,10 @@ metadata:
     kratix.io/promise-name: vcluster-orchestrator-v2
     kratix.io/resource-name: media
 spec:
-  namespace: argocd
   name: vc-media
+  namespace: argocd
   annotations:
-              ports:
+    argocd.argoproj.io/sync-wave: "0"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   project: vcluster-media
@@ -59,6 +59,10 @@ spec:
               limits:
                 cpu: 2
                 memory: 2Gi
+          coredns:
+            enabled: true
+            deployment:
+              replicas: 2
             overwriteConfig: |
               .:1053 {
                 errors
@@ -76,6 +80,7 @@ spec:
                 reload
                 loadbalance
               }
+
           backingStore:
             etcd:
               deploy:
@@ -83,26 +88,26 @@ spec:
                 statefulSet:
                   highAvailability:
                     replicas: 3
-          ingress:
-            enabled: false
-          proxy:
-            extraSANs:
-              - media.integratn.tech
-          service:
-            enabled: true
-            annotations:
-              external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
-            spec:
-              type: LoadBalancer
-              ports:
-                - name: https
-                  port: 443
-                  targetPort: 8443
-                  protocol: TCP
-          advanced:
-            podDisruptionBudget:
-              enabled: true
-              minAvailable: 1
+
+        ingress:
+          enabled: false
+
+        proxy:
+          extraSANs:
+            - media.integratn.tech
+
+
+        service:
+          enabled: true
+          annotations:
+            external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
+          spec:
+            type: LoadBalancer
+            ports:
+              - name: https
+                port: 443
+                targetPort: 8443
+                protocol: TCP
         deploy:
           metallb:
             enabled: true
