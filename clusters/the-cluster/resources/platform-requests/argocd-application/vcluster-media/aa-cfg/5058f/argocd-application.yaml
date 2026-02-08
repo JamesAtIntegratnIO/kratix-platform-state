@@ -104,7 +104,7 @@ spec:
               addVolumes:
                 - name: etcd-certs
                   secret:
-                    secretName: media-certs
+                    secretName: vcluster-media-certs
               volumeClaim:
                 enabled: true
                 size: 10Gi
