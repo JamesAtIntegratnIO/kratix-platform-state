@@ -59,10 +59,6 @@ spec:
               limits:
                 cpu: 2
                 memory: 2Gi
-          coredns:
-            enabled: true
-            deployment:
-              replicas: 2
             overwriteConfig: |
               .:1053 {
                 errors
