@@ -1,0 +1,223 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vcluster-media-etcd-ca
+  namespace: vcluster-media
+  labels:
+    app.kubernetes.io/name: etcd-ca
+    app.kubernetes.io/instance: vcluster-media
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+spec:
+  isCA: true
+  commonName: vcluster-media-etcd-ca
+  secretName: vcluster-media-etcd-ca
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  issuerRef:
+    name: vcluster-media-etcd-selfsigned
+    kind: Issuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: vcluster-media-etcd-selfsigned
+  namespace: vcluster-media
+  labels:
+    app.kubernetes.io/name: etcd-issuer
+    app.kubernetes.io/instance: vcluster-media
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: vcluster-media-etcd-ca
+  namespace: vcluster-media
+  labels:
+    app.kubernetes.io/name: etcd-ca-issuer
+    app.kubernetes.io/instance: vcluster-media
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+spec:
+  ca:
+    secretName: vcluster-media-etcd-ca
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vcluster-media-etcd-certs-merge
+  namespace: vcluster-media
+  labels:
+    app.kubernetes.io/name: etcd-certs-job
+    app.kubernetes.io/instance: vcluster-media
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+spec:
+  template:
+    metadata:
+      labels:
+        app: etcd-certs-merge
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: vc-vcluster-media
+      containers:
+      - name: merge-certs
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for certificates to be ready..."
+          
+          # Wait for CA cert
+          until kubectl get secret vcluster-media-etcd-ca -n vcluster-media 2>/dev/null; do
+            echo "Waiting for CA certificate..."
+            sleep 2
+          done
+          
+          # Wait for server cert
+          until kubectl get secret vcluster-media-etcd-server -n vcluster-media 2>/dev/null; do
+            echo "Waiting for server certificate..."
+            sleep 2
+          done
+          
+          # Wait for peer cert
+          until kubectl get secret vcluster-media-etcd-peer -n vcluster-media 2>/dev/null; do
+            echo "Waiting for peer certificate..."
+            sleep 2
+          done
+          
+          echo "All certificates ready, merging..."
+          
+          # Extract certs
+          CA_CRT=$(kubectl get secret vcluster-media-etcd-ca -n vcluster-media -o jsonpath='{.data.tls\.crt}')
+          SERVER_CRT=$(kubectl get secret vcluster-media-etcd-server -n vcluster-media -o jsonpath='{.data.tls\.crt}')
+          SERVER_KEY=$(kubectl get secret vcluster-media-etcd-server -n vcluster-media -o jsonpath='{.data.tls\.key}')
+          PEER_CRT=$(kubectl get secret vcluster-media-etcd-peer -n vcluster-media -o jsonpath='{.data.tls\.crt}')
+          PEER_KEY=$(kubectl get secret vcluster-media-etcd-peer -n vcluster-media -o jsonpath='{.data.tls\.key}')
+          
+          # Create merged secret
+          kubectl create secret generic vcluster-media-certs -n vcluster-media \
+            --from-literal=etcd-ca.crt="$(echo $CA_CRT | base64 -d)" \
+            --from-literal=etcd-server.crt="$(echo $SERVER_CRT | base64 -d)" \
+            --from-literal=etcd-server.key="$(echo $SERVER_KEY | base64 -d)" \
+            --from-literal=etcd-peer.crt="$(echo $PEER_CRT | base64 -d)" \
+            --from-literal=etcd-peer.key="$(echo $PEER_KEY | base64 -d)" \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "Certificate merge complete!"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vcluster-media-etcd-server
+  namespace: vcluster-media
+  labels:
+    app.kubernetes.io/name: etcd-server-cert
+    app.kubernetes.io/instance: vcluster-media
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+spec:
+  secretName: vcluster-media-etcd-server
+  commonName: vcluster-media-etcd
+  dnsNames:
+    - vcluster-media-etcd
+    - vcluster-media-etcd.vcluster-media
+    - vcluster-media-etcd.vcluster-media.svc
+    - vcluster-media-etcd.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-headless
+    - vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-0
+    - vcluster-media-etcd-0.vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-0.vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-0.vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-1
+    - vcluster-media-etcd-1.vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-1.vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-1.vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-2
+    - vcluster-media-etcd-2.vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-2.vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-2.vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+    - localhost
+  ipAddresses:
+    - 127.0.0.1
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - server auth
+    - client auth
+  issuerRef:
+    name: vcluster-media-etcd-ca
+    kind: Issuer
+    group: cert-manager.io
+  secretTemplate:
+    labels:
+      app.kubernetes.io/name: etcd-server-cert
+      app.kubernetes.io/instance: vcluster-media
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vcluster-media-etcd-peer
+  namespace: vcluster-media
+  labels:
+    app.kubernetes.io/name: etcd-peer-cert
+    app.kubernetes.io/instance: vcluster-media
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+spec:
+  secretName: vcluster-media-etcd-peer
+  commonName: vcluster-media-etcd
+  dnsNames:
+    - vcluster-media-etcd
+    - vcluster-media-etcd.vcluster-media
+    - vcluster-media-etcd.vcluster-media.svc
+    - vcluster-media-etcd.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-headless
+    - vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-0
+    - vcluster-media-etcd-0.vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-0.vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-0.vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-1
+    - vcluster-media-etcd-1.vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-1.vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-1.vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+    - vcluster-media-etcd-2
+    - vcluster-media-etcd-2.vcluster-media-etcd-headless.vcluster-media
+    - vcluster-media-etcd-2.vcluster-media-etcd-headless.vcluster-media.svc
+    - vcluster-media-etcd-2.vcluster-media-etcd-headless.vcluster-media.svc.cluster.local
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - server auth
+    - client auth
+  issuerRef:
+    name: vcluster-media-etcd-ca
+    kind: Issuer
+    group: cert-manager.io
+  secretTemplate:
+    labels:
+      app.kubernetes.io/name: etcd-peer-cert
+      app.kubernetes.io/instance: vcluster-media
+
