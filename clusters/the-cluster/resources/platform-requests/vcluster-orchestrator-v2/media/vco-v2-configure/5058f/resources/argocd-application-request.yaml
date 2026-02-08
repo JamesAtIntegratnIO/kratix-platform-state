@@ -91,9 +91,23 @@ spec:
             image:
               repository: loft-sh/vcluster-oss
             imagePullPolicy: Always
+            initContainers:
+            - command:
+              - sh
+              - -c
+              - |
+                cp /etcd-certs/* /pki/ && chmod 600 /pki/*.key || true
+              image: busybox:1.36
+              name: seed-etcd-certs
+              volumeMounts:
+              - mountPath: /etcd-certs
+                name: etcd-certs
+                readOnly: true
+              - mountPath: /pki
+                name: certs
             persistence:
               addVolumeMounts:
-              - mountPath: /pki
+              - mountPath: /etcd-certs
                 name: etcd-certs
                 readOnly: true
               addVolumes:
