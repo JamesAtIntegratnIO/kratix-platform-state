@@ -51,6 +51,22 @@ spec:
               enabled: true
               image:
                 tag: v1.34.3
+          ingress:
+            enabled: false
+          proxy:
+            extraSANs:
+              - media.integratn.tech
+          service:
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
+            enabled: true
+            spec:
+              ports:
+                - name: https
+                  port: 443
+                  protocol: TCP
+                  targetPort: 8443
+              type: LoadBalancer
           serviceMonitor:
             enabled: true
             labels:
@@ -81,8 +97,6 @@ spec:
         deploy:
           metallb:
             enabled: true
-        ingress:
-          enabled: false
         integrations:
           certManager:
             enabled: true
@@ -115,9 +129,6 @@ spec:
             fromHost:
               - from: default/kubernetes
                 to: default/kubernetes
-        proxy:
-          extraSANs:
-            - media.integratn.tech
         rbac:
           clusterRole:
             enabled: true
@@ -132,17 +143,6 @@ spec:
                   - get
                   - list
                   - watch
-        service:
-          annotations:
-            external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
-          enabled: true
-          spec:
-            ports:
-              - name: https
-                port: 443
-                protocol: TCP
-                targetPort: 8443
-            type: LoadBalancer
         sync:
           fromHost:
             ingressClasses:
