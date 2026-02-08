@@ -1,0 +1,200 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vcluster-media
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: vcluster-media
+  source:
+    repoURL: https://charts.loft.sh
+    chart: vcluster
+    targetRevision: 0.31.0
+    helm:
+      releaseName: vcluster-media
+      valuesObject:
+        controlPlane:
+          backingStore:
+            etcd:
+              deploy:
+                enabled: true
+                statefulSet:
+                  extraArgs:
+                    - --client-cert-auth=false
+                  highAvailability:
+                    replicas: 3
+          coredns:
+            deployment:
+              replicas: 2
+            enabled: true
+            overwriteConfig: |
+              .:1053 {
+                errors
+                health
+                ready
+                kubernetes cluster.local in-addr.arpa ip6.arpa {
+                  pods insecure
+                  fallthrough in-addr.arpa ip6.arpa
+                  ttl 30
+                }
+                prometheus 0.0.0.0:9153
+                forward . /etc/resolv.conf
+                cache 30
+                loop
+                reload
+                loadbalance
+              }
+          distro:
+            k8s:
+              enabled: true
+              image:
+                tag: v1.34.3
+          ingress:
+            enabled: false
+          proxy:
+            extraSANs:
+              - media.integratn.tech
+          service:
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: media.integratn.tech
+            enabled: true
+            spec:
+              ports:
+                - name: https
+                  port: 443
+                  protocol: TCP
+                  targetPort: 8443
+              type: LoadBalancer
+          serviceMonitor:
+            enabled: true
+            labels:
+              cluster_role: vcluster
+              environment: production
+              vcluster_name: vcluster-media
+              vcluster_namespace: vcluster-media
+          statefulSet:
+            highAvailability:
+              replicas: 3
+            image:
+              repository: loft-sh/vcluster-oss
+            imagePullPolicy: Always
+            initContainers:
+              - command:
+                  - sh
+                  - -c
+                  - |
+                    cp /etcd-certs/* /pki/ && chmod 600 /pki/*.key || true
+                image: busybox:1.36
+                name: seed-etcd-certs
+                volumeMounts:
+                  - mountPath: /etcd-certs
+                    name: etcd-certs
+                    readOnly: true
+                  - mountPath: /pki
+                    name: certs
+            persistence:
+              addVolumeMounts:
+                - mountPath: /etcd-certs
+                  name: etcd-certs
+                  readOnly: true
+              addVolumes:
+                - name: etcd-certs
+                  secret:
+                    secretName: media-certs
+              volumeClaim:
+                enabled: true
+                size: 10Gi
+            resources:
+              limits:
+                cpu: "2"
+                memory: 2Gi
+              requests:
+                cpu: 500m
+                memory: 2Gi
+            scheduling:
+              podManagementPolicy: Parallel
+              priorityClassName: system-cluster-critical
+        deploy:
+          metallb:
+            enabled: true
+        integrations:
+          certManager:
+            enabled: true
+            sync:
+              fromHost:
+                clusterIssuers:
+                  enabled: true
+                  selector:
+                    labels:
+                      integratn.tech/cluster-issuer: letsencrypt-prod
+          externalSecrets:
+            enabled: true
+            sync:
+              fromHost:
+                clusterStores:
+                  enabled: true
+                  selector:
+                    matchLabels:
+                      integratn.tech/cluster-secret-store: onepassword-store
+            webhook:
+              enabled: true
+          metricsServer:
+            enabled: true
+        logging:
+          encoding: json
+        networking:
+          advanced:
+            clusterDomain: cluster.local
+          replicateServices:
+            fromHost:
+              - from: default/kubernetes
+                to: default/kubernetes
+        rbac:
+          clusterRole:
+            enabled: true
+            extraRules:
+              - apiGroups:
+                  - ""
+                resourceNames:
+                  - eso-onepassword-token
+                resources:
+                  - secrets
+                verbs:
+                  - get
+                  - list
+                  - watch
+        sync:
+          fromHost:
+            ingressClasses:
+              enabled: false
+            secrets:
+              enabled: true
+              mappings:
+                byName:
+                  external-secrets/eso-onepassword-token: external-secrets/eso-onepassword-token
+            storageClasses:
+              enabled: true
+          toHost:
+            ingresses:
+              enabled: false
+            networkPolicies:
+              enabled: false
+            persistentVolumes:
+              enabled: true
+            pods:
+              enabled: true
+        telemetry:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vcluster-media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
