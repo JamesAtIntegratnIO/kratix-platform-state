@@ -63,7 +63,6 @@ metadata:
     kratix.io/promise-name: vcluster-orchestrator-v2
     kratix.io/resource-name: media
 spec:
-  ttlSecondsAfterFinished: 300
   template:
     metadata:
       labels:

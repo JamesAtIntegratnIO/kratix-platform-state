@@ -179,6 +179,17 @@ spec:
                   - watch
                 resourceNames:
                   - eso-onepassword-token
+        controlPlane:
+          statefulSet:
+            persistence:
+              addVolumeMounts:
+              - mountPath: /pki
+                name: etcd-certs
+                readOnly: true
+              addVolumes:
+              - name: etcd-certs
+                secret:
+                  secretName: media-certs
   syncPolicy:
     automated:
       prune: true
