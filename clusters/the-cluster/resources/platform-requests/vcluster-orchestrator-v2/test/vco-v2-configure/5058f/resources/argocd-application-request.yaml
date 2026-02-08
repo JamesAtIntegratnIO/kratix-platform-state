@@ -60,10 +60,6 @@ spec:
               limits:
                 cpu: 1000m
                 memory: 1Gi
-          coredns:
-            enabled: true
-            deployment:
-              replicas: 1
             overwriteConfig: |
               .:1053 {
                 errors
