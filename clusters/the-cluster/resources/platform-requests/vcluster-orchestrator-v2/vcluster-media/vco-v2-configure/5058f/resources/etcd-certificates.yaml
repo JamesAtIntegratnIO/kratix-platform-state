@@ -111,7 +111,7 @@ spec:
             --from-literal=etcd-peer.key="$(echo $PEER_KEY | base64 -d)" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          echo "Certificate merge complete!"%!(EXTRA string=vcluster-media, string=vcluster-media)
+          echo "Certificate merge complete!"
         image: bitnami/kubectl:latest
         name: merge-certs
       restartPolicy: OnFailure
