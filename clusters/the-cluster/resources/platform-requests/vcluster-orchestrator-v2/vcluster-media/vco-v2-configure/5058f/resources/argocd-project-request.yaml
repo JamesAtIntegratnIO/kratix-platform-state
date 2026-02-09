@@ -1,0 +1,32 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: ArgoCDProject
+metadata:
+  name: vcluster-media
+  namespace: platform-requests
+  labels:
+    app.kubernetes.io/name: argocd-project
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+spec:
+  namespace: argocd
+  name: vcluster-media
+  description: "VCluster project for vcluster-media"
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+    argocd.argoproj.io/project-group: appteam
+  sourceRepos:
+    - "https://charts.loft.sh"
+  destinations:
+    - namespace: "vcluster-media"
+      server: "https://kubernetes.default.svc"
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
