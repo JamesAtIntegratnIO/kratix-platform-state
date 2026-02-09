@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: vcluster-media
+  namespace: argocd
+  annotations:
+    {}
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    kratix.io/promise-name: argocd-project
+    kratix.io/resource-name: vcluster-media
+
+spec:
+  description: Project for vcluster vcluster-media
+  sourceRepos:
+    - https://github.com/jamesatintegratnio/gitops_homelab_2_0
+    - https://charts.loft.sh
+  destinations:
+    - namespace: '*'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
