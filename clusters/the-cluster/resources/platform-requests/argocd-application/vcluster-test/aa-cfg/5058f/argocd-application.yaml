@@ -22,6 +22,10 @@ spec:
       releaseName: test
       valuesObject:
         controlPlane:
+          advanced:
+            podDisruptionBudget:
+              enabled: true
+              minAvailable: 1
           backingStore:
             etcd:
               deploy:
