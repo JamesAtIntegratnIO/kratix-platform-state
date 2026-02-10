@@ -1,0 +1,182 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: ArgoCDApplication
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: argocd-application
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+  name: vcluster-test
+  namespace: platform-requests
+spec:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  destination:
+    namespace: vcluster-test
+    server: https://kubernetes.default.svc
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  name: vcluster-test
+  namespace: argocd
+  project: vcluster-test
+  source:
+    chart: vcluster
+    helm:
+      releaseName: test
+      valuesObject:
+        controlPlane:
+          backingStore:
+            etcd:
+              deploy:
+                enabled: false
+          coredns:
+            deployment:
+              replicas: 1
+            enabled: true
+            overwriteConfig: |-
+              .:1053 {
+                errors
+                health
+                ready
+                kubernetes cluster.local in-addr.arpa ip6.arpa {
+                  pods insecure
+                  fallthrough in-addr.arpa ip6.arpa
+                  ttl 30
+                }
+                prometheus 0.0.0.0:9153
+                forward . /etc/resolv.conf
+                cache 30
+                loop
+                reload
+                loadbalance
+              }
+          distro:
+            k8s:
+              enabled: true
+              version: v1.34.3
+          ingress:
+            enabled: false
+          proxy:
+            extraSANs:
+            - test.integratn.tech
+            - 10.0.4.200
+          service:
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: test.integratn.tech
+            enabled: true
+            spec:
+              loadBalancerIP: 10.0.4.200
+              ports:
+              - name: https
+                port: 443
+                protocol: TCP
+                targetPort: 8443
+              type: LoadBalancer
+          serviceMonitor:
+            enabled: true
+            labels:
+              cluster_role: vcluster
+              environment: development
+              vcluster_name: test
+              vcluster_namespace: vcluster-test
+          statefulSet:
+            highAvailability:
+              replicas: 1
+            image:
+              repository: loft-sh/vcluster-oss
+            imagePullPolicy: Always
+            persistence:
+              volumeClaim:
+                enabled: false
+                size: 5Gi
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+              requests:
+                cpu: 200m
+                memory: 512Mi
+            scheduling:
+              podManagementPolicy: Parallel
+              priorityClassName: system-cluster-critical
+        deploy:
+          metallb:
+            enabled: true
+        exportKubeConfig:
+          server: https://test.integratn.tech:443
+        integrations:
+          certManager:
+            enabled: true
+            sync:
+              fromHost:
+                clusterIssuers:
+                  enabled: true
+                  selector:
+                    labels:
+                      integratn.tech/cluster-issuer: letsencrypt-prod
+          externalSecrets:
+            enabled: true
+            sync:
+              fromHost:
+                clusterStores:
+                  enabled: true
+                  selector:
+                    matchLabels:
+                      integratn.tech/cluster-secret-store: onepassword-store
+            webhook:
+              enabled: true
+          metricsServer:
+            enabled: true
+        logging:
+          encoding: json
+        networking:
+          advanced:
+            clusterDomain: cluster.local
+          replicateServices:
+            fromHost:
+            - from: default/kubernetes
+              to: default/kubernetes
+        rbac:
+          clusterRole:
+            enabled: true
+            extraRules:
+            - apiGroups:
+              - ""
+              resourceNames:
+              - eso-onepassword-token
+              resources:
+              - secrets
+              verbs:
+              - get
+              - list
+              - watch
+        sync:
+          fromHost:
+            ingressClasses:
+              enabled: true
+            secrets:
+              enabled: true
+              mappings:
+                byName:
+                  external-secrets/eso-onepassword-token: external-secrets/eso-onepassword-token
+            storageClasses:
+              enabled: true
+          toHost:
+            ingresses:
+              enabled: true
+            networkPolicies:
+              enabled: false
+            persistentVolumes:
+              enabled: true
+            pods:
+              enabled: true
+        telemetry:
+          enabled: false
+    repoURL: https://charts.loft.sh
+    targetRevision: 0.30.4
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
