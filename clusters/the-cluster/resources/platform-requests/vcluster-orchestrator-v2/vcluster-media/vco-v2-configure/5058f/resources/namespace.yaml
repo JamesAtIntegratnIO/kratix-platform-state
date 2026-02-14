@@ -8,5 +8,6 @@ metadata:
     app.kubernetes.io/name: vcluster-namespace
     kratix.io/promise-name: vcluster-orchestrator-v2
     kratix.io/resource-name: vcluster-media
+    platform.integratn.tech/type: vcluster
     vcluster.loft.sh/namespace: "true"
   name: vcluster-media
