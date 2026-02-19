@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: vcluster-namespace
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: demo
+    platform.integratn.tech/type: vcluster
+    vcluster.loft.sh/namespace: "true"
+  name: demo
