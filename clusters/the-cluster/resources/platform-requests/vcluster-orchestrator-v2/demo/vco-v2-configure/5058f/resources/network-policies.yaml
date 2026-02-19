@@ -154,7 +154,7 @@ spec:
     - ipBlock:
         cidr: 192.168.0.0/16
     ports:
-    - port: 443
+    - port: 8443
       protocol: TCP
   - from:
     - namespaceSelector:
