@@ -1,0 +1,198 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: default-deny-all
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+    platform.integratn.tech/type: vcluster-policy
+  name: default-deny-all
+  namespace: test
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: allow-dns
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+    platform.integratn.tech/type: vcluster-policy
+  name: allow-dns
+  namespace: test
+spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+  podSelector: {}
+  policyTypes:
+  - Egress
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: allow-kube-api
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+    platform.integratn.tech/type: vcluster-policy
+  name: allow-kube-api
+  namespace: test
+spec:
+  egress:
+  - toEntities:
+    - kube-apiserver
+  endpointSelector: {}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: allow-coredns-to-host-dns
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+    platform.integratn.tech/type: vcluster-policy
+  name: allow-coredns-to-host-dns
+  namespace: test
+spec:
+  egress:
+  - toCIDR:
+    - 169.254.116.108/32
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+  endpointSelector: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: allow-intra-namespace
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+    platform.integratn.tech/type: vcluster-policy
+  name: allow-intra-namespace
+  namespace: test
+spec:
+  egress:
+  - to:
+    - podSelector: {}
+  ingress:
+  - from:
+    - podSelector: {}
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: allow-vcluster-external
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+    platform.integratn.tech/type: vcluster-policy
+  name: allow-vcluster-external
+  namespace: test
+spec:
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 10.0.1.139/32
+  - ports:
+    - port: 443
+      protocol: TCP
+    - port: 80
+      protocol: TCP
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: argocd
+    - ipBlock:
+        cidr: 10.0.0.0/8
+    - ipBlock:
+        cidr: 192.168.0.0/16
+    ports:
+    - port: 8443
+      protocol: TCP
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: nginx-gateway
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: allow-nfs-egress
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: test
+    platform.integratn.tech/type: vcluster-policy
+  name: allow-nfs-egress
+  namespace: test
+spec:
+  egress:
+  - ports:
+    - port: 2049
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 10.0.0.0/8
+  podSelector: {}
+  policyTypes:
+  - Egress
