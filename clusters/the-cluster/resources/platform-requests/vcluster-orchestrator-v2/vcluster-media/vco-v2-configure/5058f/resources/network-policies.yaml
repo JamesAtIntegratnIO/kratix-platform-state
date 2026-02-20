@@ -228,3 +228,27 @@ spec:
   podSelector: {}
   policyTypes:
   - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/name: allow-usenet-egress
+    kratix.io/promise-name: vcluster-orchestrator-v2
+    kratix.io/resource-name: vcluster-media
+    platform.integratn.tech/type: vcluster-policy
+  name: allow-usenet-egress
+  namespace: vcluster-media
+spec:
+  egress:
+  - ports:
+    - port: 563
+      protocol: TCP
+    to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+  podSelector: {}
+  policyTypes:
+  - Egress
