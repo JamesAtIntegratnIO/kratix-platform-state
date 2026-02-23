@@ -31,6 +31,10 @@ spec:
                   - --client-cert-auth=false
                   highAvailability:
                     replicas: 3
+                  image:
+                    registry: registry.k8s.io
+                    repository: etcd
+                    tag: 3.6.8-0
           coredns:
             deployment:
               replicas: 2
@@ -181,7 +185,7 @@ spec:
         telemetry:
           enabled: false
     repoURL: https://charts.loft.sh
-    targetRevision: 0.31.0
+    targetRevision: 0.31.1
   syncPolicy:
     automated:
       prune: true
