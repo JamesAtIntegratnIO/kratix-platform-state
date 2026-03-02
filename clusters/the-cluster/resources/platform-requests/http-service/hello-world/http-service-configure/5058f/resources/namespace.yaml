@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/part-of: hello-world
+    app.kubernetes.io/team: platform
+    kratix.io/promise-name: http-service
+  name: hello-world
