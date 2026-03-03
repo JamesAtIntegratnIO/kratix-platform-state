@@ -1,0 +1,137 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/part-of: hello-world
+    app.kubernetes.io/team: platform
+    kratix.io/promise-name: http-service
+  name: hello-world
+  namespace: argocd
+spec:
+  destination:
+    namespace: hello-world
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: application
+    helm:
+      releaseName: hello-world
+      valuesObject:
+        additionalLabels:
+          app.kubernetes.io/managed-by: kratix
+          app.kubernetes.io/part-of: hello-world
+          app.kubernetes.io/team: platform
+          kratix.io/promise-name: http-service
+        alertmanagerConfig:
+          enabled: false
+        applicationName: hello-world
+        autoscaling:
+          enabled: false
+        backup:
+          enabled: false
+        certificate:
+          enabled: false
+        configMap:
+          enabled: false
+        cronJob:
+          enabled: false
+        deployment:
+          containerSecurityContext:
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          enabled: true
+          image:
+            pullPolicy: IfNotPresent
+            repository: docker.io/nginxinc/nginx-unprivileged
+            tag: latest
+          livenessProbe:
+            enabled: true
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          readinessProbe:
+            enabled: true
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          reloadOnChange: true
+          replicas: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          revisionHistoryLimit: 3
+        endpointMonitor:
+          enabled: false
+        externalSecret:
+          enabled: false
+        forecastle:
+          enabled: false
+        grafanaDashboard:
+          enabled: false
+        httpRoute:
+          enabled: false
+        ingress:
+          enabled: false
+        job:
+          enabled: false
+        networkPolicy:
+          enabled: false
+        pdb:
+          enabled: false
+        prometheusRule:
+          enabled: false
+        rbac:
+          enabled: true
+          serviceAccount:
+            enabled: true
+            name: hello-world
+        route:
+          enabled: false
+        sealedSecret:
+          enabled: false
+        secret:
+          enabled: false
+        secretProviderClass:
+          enabled: false
+        service:
+          enabled: true
+          ports:
+          - name: http
+            port: 8080
+            protocol: TCP
+            targetPort: 8080
+          type: ClusterIP
+        vpa:
+          enabled: false
+    repoURL: https://stakater.github.io/stakater-charts
+    targetRevision: 6.16.1
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
