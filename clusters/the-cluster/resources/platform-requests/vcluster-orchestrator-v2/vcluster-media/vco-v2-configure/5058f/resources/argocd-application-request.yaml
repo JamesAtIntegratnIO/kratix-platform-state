@@ -184,7 +184,7 @@ spec:
             ingresses:
               enabled: true
             networkPolicies:
-              enabled: false
+              enabled: true
             persistentVolumes:
               enabled: true
             pods:
