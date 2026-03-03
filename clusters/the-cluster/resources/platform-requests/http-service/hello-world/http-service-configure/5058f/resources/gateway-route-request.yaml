@@ -1,0 +1,22 @@
+apiVersion: platform.integratn.tech/v1alpha1
+kind: GatewayRoute
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kratix
+    app.kubernetes.io/part-of: hello-world
+    kratix.io/promise-name: http-service
+  name: hello-world-route
+  namespace: platform-requests
+spec:
+  backendRef:
+    name: hello-world
+    port: 8080
+  gateway:
+    name: nginx-gateway
+    namespace: nginx-gateway
+  hostname: hello-world.cluster.integratn.tech
+  httpRedirect: true
+  name: hello-world
+  namespace: hello-world
+  ownerPromise: http-service
+  path: /
