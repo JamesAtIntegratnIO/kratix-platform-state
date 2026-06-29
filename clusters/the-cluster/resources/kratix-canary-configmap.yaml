@@ -3,6 +3,5 @@ data:
   canary: this confirms your infrastructure is reading from Kratix state stores
 kind: ConfigMap
 metadata:
-  creationTimestamp: null
   name: kratix-info
   namespace: kratix-worker-system
