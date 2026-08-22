@@ -138,7 +138,7 @@ spec:
             webhook:
               enabled: true
           metricsServer:
-            enabled: false
+            enabled: true
         logging:
           encoding: json
         networking:
