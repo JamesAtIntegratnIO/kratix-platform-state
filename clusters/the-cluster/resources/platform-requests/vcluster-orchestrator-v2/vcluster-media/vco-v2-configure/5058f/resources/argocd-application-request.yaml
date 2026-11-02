@@ -95,7 +95,7 @@ spec:
               replicas: 3
             image:
               repository: loft-sh/vcluster-oss
-              tag: 0.35.5@sha256:c2d7656dc73f836957368c7cfda4ad54fedef4a990b25ebf74c373919a6d5a66
+              tag: 0.36.4@sha256:e4958f131e8f39ff21dda99c62a434bc16af3d26c57a270bc2b0261aa83258ec
             imagePullPolicy: Always
             persistence:
               addVolumeMounts:
@@ -173,7 +173,7 @@ spec:
         telemetry:
           enabled: false
     repoURL: https://charts.loft.sh
-    targetRevision: 0.35.5
+    targetRevision: 0.36.4
   syncPolicy:
     automated:
       prune: true
