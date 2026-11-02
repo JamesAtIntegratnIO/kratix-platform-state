@@ -124,26 +124,6 @@ spec:
         exportKubeConfig:
           server: https://media.integratn.tech:443
         integrations:
-          certManager:
-            enabled: true
-            sync:
-              fromHost:
-                clusterIssuers:
-                  enabled: true
-                  selector:
-                    labels:
-                      integratn.tech/cluster-issuer: letsencrypt-prod
-          externalSecrets:
-            enabled: true
-            sync:
-              fromHost:
-                clusterStores:
-                  enabled: true
-                  selector:
-                    matchLabels:
-                      integratn.tech/cluster-secret-store: onepassword-store
-            webhook:
-              enabled: true
           metricsServer:
             enabled: true
         logging:
