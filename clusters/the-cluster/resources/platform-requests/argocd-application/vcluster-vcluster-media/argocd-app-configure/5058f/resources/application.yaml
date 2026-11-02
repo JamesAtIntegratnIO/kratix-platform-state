@@ -34,7 +34,7 @@ spec:
                   image:
                     registry: registry.k8s.io
                     repository: etcd
-                    tag: 3.6.8-0
+                    tag: 3.6.8-0@sha256:397189418d1a00e500c0605ad18d1baf3b541a1004d768448c367e48071622e5
           coredns:
             deployment:
               replicas: 2
@@ -59,7 +59,7 @@ spec:
           distro:
             k8s:
               enabled: true
-              version: v1.34.3
+              version: v1.34.3@sha256:826be1580721885d0b1ab790e2957f1ab1325af580fb477848af69270d8ce2f1
           ingress:
             enabled: false
           proxy:
@@ -88,6 +88,7 @@ spec:
               replicas: 3
             image:
               repository: loft-sh/vcluster-oss
+              tag: 0.32.3@sha256:80bb3664379b0a40d1b1a4539cdc20eb80e5dffb76e5423db32067a8d077ec97
             imagePullPolicy: Always
             persistence:
               addVolumeMounts:
@@ -165,7 +166,7 @@ spec:
         telemetry:
           enabled: false
     repoURL: https://charts.loft.sh
-    targetRevision: 0.31.1
+    targetRevision: 0.32.3
   syncPolicy:
     automated:
       prune: true
