@@ -4,24 +4,6 @@ metadata:
   labels:
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/managed-by: kratix
-    app.kubernetes.io/name: default-deny-all
-    kratix.io/promise-name: vcluster-orchestrator-v2
-    kratix.io/resource-name: vcluster-media
-    platform.integratn.tech/type: vcluster-policy
-  name: default-deny-all
-  namespace: vcluster-media
-spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  labels:
-    app.kubernetes.io/component: network-policy
-    app.kubernetes.io/managed-by: kratix
     app.kubernetes.io/name: allow-dns
     kratix.io/promise-name: vcluster-orchestrator-v2
     kratix.io/resource-name: vcluster-media
