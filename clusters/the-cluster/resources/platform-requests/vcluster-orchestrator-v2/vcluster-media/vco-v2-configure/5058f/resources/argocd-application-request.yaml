@@ -136,6 +136,8 @@ spec:
             fromHost:
             - from: default/kubernetes
               to: default/kubernetes
+            - from: authentik/authentik-server
+              to: nginx-gateway/authentik-server
         rbac:
           clusterRole:
             enabled: true
